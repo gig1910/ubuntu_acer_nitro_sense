@@ -2,22 +2,38 @@
 
 [Русская версия](README.ru.md)
 
-Acer Control is an experimental GTK4/libadwaita control center for Acer Nitro laptops on Linux. It combines live telemetry, Acer platform-profile switching, fan-profile editing and visualization, and hardware keyboard RGB control behind a privileged system D-Bus daemon.
+Acer Control is a GTK4/libadwaita control center for Acer Nitro laptops on Linux. It combines live telemetry, Acer platform-profile switching, fan-profile management and visualization, and hardware keyboard RGB control behind a privileged system D-Bus daemon.
 
-> **Project status:** `0.1.0-rc10` release candidate. Development and hardware validation are currently focused on **Acer Nitro AN515-58** running **Ubuntu 26.04**. Other Acer models may use different WMI methods or firmware behavior and must be treated as untested until verified.
+> **Project status:** `0.1.0-rc12` release candidate. Development and hardware validation are currently focused on **Acer Nitro AN515-58** running **Ubuntu 26.04**. Other Acer models may use different WMI methods or firmware behavior and must be treated as untested until verified.
 
 ## Highlights
 
 - GTK4/libadwaita dashboard with CPU/GPU temperatures, fan RPM and runtime history.
+- Dashboard temperature history uses a `30..110 °C` display range so a real `100 °C` reading does not visually stick to the graph border.
 - Acer ACPI `platform_profile` switching and persistent default profile selection.
+- Separate **Platform profile** and **Fan control profile** selectors.
 - Fan-profile library with protected built-in profiles and editable user copies.
-- Interactive fan-curve editor and controller simulation showing EMA, hysteresis and down-delay behavior.
+- Interactive fan-curve editor and controller simulation showing EMA, CPU hysteresis, CPU down delay and GPU native down delay.
+- System profiles are read-only; the `Performance` custom template can be copied to a user profile before editing.
 - 4-zone keyboard RGB control using hardware effects only: Static, Breath, Neon, Wave, Shifting and Zoom.
 - Keyboard idle backlight timeout support when exposed by the bridge firmware interface.
 - Root system daemon over D-Bus + polkit; the GUI itself runs unprivileged.
 - DKMS packaging for the RGB WMI bridge, including optional Secure Boot/MOK signing setup.
-- English and Russian UI; language can follow the graphical session automatically.
-- Standalone installer, diagnostics command and uninstaller.
+- English and Russian UI with Auto/system-language selection.
+- Standalone installer, upgrade path, diagnostics command and uninstaller.
+
+## RC12 dashboard layout
+
+RC12 rebalances the main window vertically. Fan-control profile selection now occupies the otherwise unused area below the NVIDIA GPU state, while platform-profile controls remain in the right column. This gives substantially more height to the runtime-history graph on laptop workareas and keeps the window vertically resizable.
+
+## Platform profiles vs fan-control profiles
+
+These are deliberately separate concepts:
+
+- **Platform profile** controls Acer/ACPI `platform_profile`: `low-power`, `quiet`, `balanced`, `balanced-performance`, `performance`.
+- **Fan control profile** selects an Acer Control fan-policy profile. Choose **Automatic (follow platform profile)** to use the configured platform→fan mapping, or select any built-in/user fan profile explicitly.
+
+User-created fan profiles appear in the dashboard selector. Manual selection is persisted immediately, and the list is refreshed when the dashboard regains focus so a newly created user copy becomes available without restarting the application.
 
 ## Important RC limitation
 
@@ -61,7 +77,7 @@ acer-control-<version>.SHA256SUMS
 - [D-Bus API](docs/DBUS-API.md)
 - [Troubleshooting](docs/TROUBLESHOOTING.md)
 - [Development and release builds](docs/DEVELOPMENT.md)
-- [Current release notes](RELEASE-NOTES.md)
+- [Current release notes](RELEASE-NOTES.md) · [Русский перевод](RELEASE-NOTES.ru.md)
 
 Russian documentation: [docs/ru/](docs/ru/).
 
@@ -82,11 +98,9 @@ cat /sys/kernel/acer_control_rgb/capabilities
 busctl introspect org.acer.Control /org/acer/Control org.acer.Control
 ```
 
-## Safety and hardware scope
+## Hardware scope
 
-This software writes firmware-facing controls and installs an out-of-tree kernel module. Hardware methods have been tested on the development AN515-58, but Acer does not guarantee that the same WMI interface is safe or meaningful on every model. Do not assume compatibility from the `Nitro` product name alone.
-
-The GUI deliberately prevents editing package-owned system fan profiles. `Performance` is a read-only custom template that can be copied into a user profile and then edited. Firmware profiles are not presented as editable copies because Acer firmware does not expose their internal fan curves.
+This software writes firmware-facing controls and installs an out-of-tree kernel module. Hardware methods have been tested on the development AN515-58, but Acer does not guarantee that the same WMI interface is meaningful on every model. Do not assume compatibility from the `Nitro` product name alone.
 
 ## License
 
