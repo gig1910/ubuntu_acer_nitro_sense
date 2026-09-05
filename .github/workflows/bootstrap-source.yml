@@ -19,8 +19,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          cat .bootstrap/payload.b64.* | base64 -d > /tmp/acer-control-source.tar.gz
-          tar -xzf /tmp/acer-control-source.tar.gz -C .
+          tar -xzf .bootstrap/source.tar.gz -C .
           rm -rf .bootstrap
           rm -f .github/workflows/bootstrap-source.yml
       - name: Commit expanded source tree
