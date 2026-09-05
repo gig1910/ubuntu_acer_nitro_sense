@@ -1,0 +1,54 @@
+name: Bootstrap Acer Control source
+
+on:
+  push:
+    branches: [ bootstrap-rc12 ]
+    paths:
+      - '.bootstrap/**'
+      - '.github/workflows/bootstrap.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  expand:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Expand staged source archive
+        shell: bash
+        run: |
+          set -euxo pipefail
+          cat .bootstrap/source.* > /tmp/acer-control-source.tar.xz
+          xz -t /tmp/acer-control-source.tar.xz
+          mkdir -p /tmp/acer-control-source
+          tar -xJf /tmp/acer-control-source.tar.xz -C /tmp/acer-control-source
+          top_count=$(find /tmp/acer-control-source -mindepth 1 -maxdepth 1 | wc -l)
+          if [ "$top_count" -eq 1 ]; then
+            src=$(find /tmp/acer-control-source -mindepth 1 -maxdepth 1 -type d -print -quit)
+            if [ -n "$src" ]; then
+              cp -a "$src"/. ./
+            else
+              cp -a /tmp/acer-control-source/. ./
+            fi
+          else
+            cp -a /tmp/acer-control-source/. ./
+          fi
+          rm -rf .bootstrap
+
+      - name: Commit expanded source
+        shell: bash
+        run: |
+          set -euxo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "Nothing to commit"
+            exit 0
+          fi
+          git commit -m "Import Acer Control source tree"
+          git push
