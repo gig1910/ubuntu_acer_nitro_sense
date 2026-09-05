@@ -1,0 +1,63 @@
+name: Bug report
+description: Report a reproducible Acer Control problem
+title: "[Bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please include the exact laptop model and diagnostic output. Hardware behavior can differ between Acer models.
+  - type: input
+    id: model
+    attributes:
+      label: Laptop model
+      placeholder: Acer Nitro AN515-58
+    validations:
+      required: true
+  - type: input
+    id: os
+    attributes:
+      label: OS and desktop session
+      placeholder: Ubuntu 26.04, GNOME Wayland
+    validations:
+      required: true
+  - type: input
+    id: kernel
+    attributes:
+      label: Kernel
+      placeholder: 7.0.0-30-generic
+    validations:
+      required: true
+  - type: dropdown
+    id: secureboot
+    attributes:
+      label: Secure Boot
+      options:
+        - Enabled
+        - Disabled
+        - Unknown
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: What happened?
+      description: Describe the expected and actual behavior and the exact steps to reproduce it.
+    validations:
+      required: true
+  - type: textarea
+    id: diagnose
+    attributes:
+      label: acer-control-diagnose output
+      render: text
+      description: Remove information you do not want to publish before submitting.
+    validations:
+      required: false
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant logs
+      render: text
+      description: For example journalctl or dmesg excerpts relevant to Acer Control.
+    validations:
+      required: false

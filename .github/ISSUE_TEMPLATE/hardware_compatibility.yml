@@ -1,0 +1,43 @@
+name: Hardware compatibility report
+description: Report Acer Control readback/write behavior on another Acer model
+title: "[Hardware] "
+labels: ["hardware"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Do not assume WMI compatibility between Acer models. Start with read-only capability checks and clearly state which writes were actually tested.
+  - type: input
+    id: model
+    attributes:
+      label: Exact product model
+      placeholder: Acer Nitro ...
+    validations:
+      required: true
+  - type: input
+    id: bios
+    attributes:
+      label: BIOS/firmware version
+    validations:
+      required: false
+  - type: input
+    id: os
+    attributes:
+      label: OS / kernel
+    validations:
+      required: true
+  - type: textarea
+    id: capabilities
+    attributes:
+      label: Bridge capabilities/readback
+      render: text
+      description: Include capabilities, module version and relevant sysfs readback.
+    validations:
+      required: true
+  - type: textarea
+    id: writes
+    attributes:
+      label: Writes tested
+      description: List only operations that were actually tested on this hardware and their observed result.
+    validations:
+      required: true

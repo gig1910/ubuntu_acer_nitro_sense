@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install test dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            python3 python3-gi python3-cairo \
+            gir1.2-gtk-4.0 gir1.2-adw-1
+      - name: Compile Python
+        run: python3 -m compileall -q acer_control
+      - name: Run regression tests
+        env:
+          PYTHONPATH: .
+        run: |
+          for test in tests/*_test.py; do
+            echo "== $test =="
+            python3 "$test"
+          done
+      - name: Check shell syntax
+        run: |
+          bash -n install.sh
+          bash -n uninstall.sh
+          bash -n tools/build-release.sh
+      - name: Build release artifacts
+        run: ./tools/build-release.sh
+      - name: Upload release artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: acer-control-${{ github.sha }}
+          path: dist/*
